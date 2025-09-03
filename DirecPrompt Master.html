@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DirecPrompt Master</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0c0c0c;
+            background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 10l-10 10 10 10 10-10-10-10z' fill='%23223049' fill-opacity='0.5'/%3E%3Cpath d='M20 15l-5 5 5 5 5-5-5-5z' fill='%23FFC72C' fill-opacity='0.1'/%3E%3Cpath d='M20 20l-5 5 5 5 5-5-5-5z' fill='%23FFC72C' fill-opacity='0.1'/%3E%3C/svg%3E");
+            background-repeat: repeat;
+            min-height: 100vh;
+            color: #d1d5db; /* gray-300 */
+        }
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(15, 23, 42, 0.7);
+            padding: 8px;
+            border-radius: 8px;
+            transition: all 0.2s ease-in-out;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .copy-btn.active, .prompt-box:hover .copy-btn {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .bg-gradient-modern {
+            background-image: linear-gradient(to right, #0A192F, #172A4F);
+        }
+        
+        .box-shadow-inset {
+            box-shadow: inset 0 0 10px rgba(255, 199, 44, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-gray-950 text-gray-300 p-6 md:p-10">
+    <div class="max-w-7xl mx-auto">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-amber-500 mb-4 tracking-tight">DirecPrompt Master</h1>
+            <p class="text-gray-400 text-lg md:text-xl">
+                Un sistema dual para crear prompts perfectos.
+            </p>
+        </header>
+
+        <main class="lg:grid lg:grid-cols-2 lg:gap-12 space-y-10 lg:space-y-0">
+            <!-- Panel de Construcción de Prompt (Columna Izquierda) -->
+            <div class="lg:col-span-1 space-y-8">
+                <!-- Selector de Modo -->
+                <div class="flex justify-center mb-6">
+                    <button id="toggleModeBtn" class="px-6 py-2 rounded-full font-bold text-gray-900 bg-yellow-400 transition-all duration-300 transform scale-105 shadow-lg hover:scale-100 hover:bg-yellow-500">
+                        Cambiar a Modo Experto
+                    </button>
+                </div>
+
+                <!-- Modo Aprendiz -->
+                <div id="learnerMode">
+                    <section class="bg-[#0A192F] rounded-2xl shadow-lg p-6 md:p-8 border border-gray-700 box-shadow-inset">
+                        <h2 class="text-xl md:text-2xl font-bold text-white mb-6">1. Guía tu Visión (Modo Aprendiz)</h2>
+                        <div class="space-y-6">
+                            <div>
+                                <label for="subject" class="block text-gray-300 font-bold mb-2">Sujeto Principal (¿Quién o qué?)</label>
+                                <input type="text" id="subject" class="w-full p-3 bg-gray-900 text-white border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-colors" placeholder="Ej: Un guerrero atlético y alto">
+                            </div>
+                            <div>
+                                <label for="action" class="block text-gray-300 font-bold mb-2">Acción o Escena (¿Qué está pasando?)</label>
+                                <input type="text" id="action" class="w-full p-3 bg-gray-900 text-white border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-colors" placeholder="Ej: empuñando una espada de luz">
+                            </div>
+                            <div>
+                                <label for="environment" class="block text-gray-300 font-bold mb-2">Entorno (¿Dónde?)</label>
+                                <input type="text" id="environment" class="w-full p-3 bg-gray-900 text-white border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-colors" placeholder="Ej: en un bosque oscuro y húmedo">
+                            </div>
+                            <div>
+                                <label for="style" class="block text-gray-300 font-bold mb-2">Estilo Artístico</label>
+                                <select id="style" class="w-full p-3 bg-gray-900 text-white border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-colors">
+                                    <option value="">Selecciona un estilo...</option>
+                                    <option value="fotorrealista, hyperrealista">Fotorrealista</option>
+                                    <option value="digital art, trending on artstation">Arte Digital</option>
+                                    <option value="cyberpunk, futuristic">Cyberpunk</option>
+                                    <option value="cinematic, bold, confident">Cinematográfico</option>
+                                    <option value="oil painting">Pintura al Óleo</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="lighting" class="block text-gray-300 font-bold mb-2">Iluminación</label>
+                                <select id="lighting" class="w-full p-3 bg-gray-900 text-white border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-colors">
+                                    <option value="">Selecciona la iluminación...</option>
+                                    <option value="strong directional front-top light">Luz direccional fuerte</option>
+                                    <option value="ambient light">Luz ambiental</option>
+                                    <option value="moody cinematic lighting">Iluminación cinemática</option>
+                                    <option value="dramatic lighting">Iluminación dramática</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="composition" class="block text-gray-300 font-bold mb-2">Composición</label>
+                                <select id="composition" class="w-full p-3 bg-gray-900 text-white border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-colors">
+                                    <option value="">Selecciona la composición...</option>
+                                    <option value="centered medium close-up, symmetrical composition">Plano medio, composición simétrica</option>
+                                    <option value="wide shot, epic scale">Plano amplio, escala épica</option>
+                                    <option value="close-up portrait">Retrato de primer plano</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mt-8">
+                            <h3 class="text-white font-bold mb-3">Prompt Negativo</h3>
+                            <p class="text-gray-400 text-sm mb-4">Selecciona los elementos que quieres evitar.</p>
+                            <div class="flex flex-wrap gap-3">
+                                <div class="bg-gray-700 rounded-full px-4 py-2 text-sm text-gray-300 cursor-pointer hover:bg-red-500 hover:text-white transition-colors" data-value="blurry">blurry</div>
+                                <div class="bg-gray-700 rounded-full px-4 py-2 text-sm text-gray-300 cursor-pointer hover:bg-red-500 hover:text-white transition-colors" data-value="disfigured">disfigured</div>
+                                <div class="bg-gray-700 rounded-full px-4 py-2 text-sm text-gray-300 cursor-pointer hover:bg-red-500 hover:text-white transition-colors" data-value="ugly">ugly</div>
+                                <div class="bg-gray-700 rounded-full px-4 py-2 text-sm text-gray-300 cursor-pointer hover:bg-red-500 hover:text-white transition-colors" data-value="low quality">low quality</div>
+                                <div class="bg-gray-700 rounded-full px-4 py-2 text-sm text-gray-300 cursor-pointer hover:bg-red-500 hover:text-white transition-colors" data-value="bad anatomy">bad anatomy</div>
+                            </div>
+                            <div class="mt-4">
+                                <label for="customNegative" class="block text-gray-300 text-sm mb-2">Añade tus propios términos negativos (separados por comas)</label>
+                                <input type="text" id="customNegative" class="w-full p-2 bg-gray-900 text-white border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors" placeholder="Ej: watermark, extra fingers">
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Modo Experto (inicialmente oculto) -->
+                <div id="expertMode" class="hidden">
+                    <section class="bg-[#0A192F] rounded-2xl shadow-lg p-6 md:p-8 border border-gray-700 box-shadow-inset">
+                        <h2 class="text-xl md:text-2xl font-bold text-white mb-6">1. Escribe tu Prompt (Modo Experto)</h2>
+                        <p class="text-gray-400 text-sm mb-4">Pega o escribe tu prompt completo a continuación. Nuestro sistema lo optimizará para cada modelo.</p>
+                        <textarea id="expertPrompt" rows="10" class="w-full p-3 bg-gray-900 text-white border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-colors" placeholder="Ej: Un caballero en una armadura futurista de color azul brillante, sosteniendo una espada de energía en un planeta alienígena."></textarea>
+                    </section>
+                </div>
+                
+                <button id="generateBtn" class="mt-8 bg-gradient-to-r from-yellow-500 to-yellow-600 text-gray-950 font-bold py-3 px-8 rounded-full shadow-lg hover:from-yellow-600 hover:to-yellow-700 transition-all duration-300 transform hover:scale-105 w-full">
+                    Generar Prompts
+                </button>
+            </div>
+
+            <!-- Sección de Resultados y Anatomía (Columna Derecha) -->
+            <div id="results" class="lg:col-span-1 space-y-8 hidden">
+                <h2 class="text-2xl md:text-3xl font-bold text-white tracking-tight text-center">Resultados de la Generación</h2>
+                <!-- Anatomía del Prompt -->
+                <div class="bg-[#0A192F] rounded-2xl shadow-lg p-6 md:p-8 border border-gray-700 box-shadow-inset">
+                    <h3 class="text-xl md:text-2xl font-bold text-white mb-4">Anatomía del Prompt</h3>
+                    <p class="text-gray-400 mb-6" id="anatomyDescription">Así es como tu visión se tradujo en un prompt de alta precisión.</p>
+                    <div id="anatomyContainer" class="space-y-4">
+                        <!-- Componentes del prompt se inyectarán aquí -->
+                    </div>
+                </div>
+
+                <!-- Prompts Generados - Español -->
+                <div class="space-y-8">
+                    <h2 class="text-2xl font-bold text-gray-300 mb-4 text-center">Prompts en Español</h2>
+                    <div class="prompt-box bg-[#0A192F] border-4 border-yellow-600 p-6 rounded-2xl shadow-xl relative box-shadow-inset">
+                        <h3 class="text-2xl font-bold text-yellow-400 mb-3 flex items-center">
+                            <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h2v-6h-2v6zm0-8h2V7h-2v2z"/></svg>
+                            Midjourney
+                        </h3>
+                        <div class="relative bg-gray-900 p-4 rounded-xl border-2 border-yellow-500 box-shadow-inset">
+                            <pre id="mjPrompt_es" class="text-gray-200 whitespace-pre-wrap font-mono text-sm"></pre>
+                            <button onclick="copyToClipboard('mjPrompt_es', this)" class="copy-btn">
+                                <svg class="w-5 h-5 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="prompt-box bg-[#0A192F] border-4 border-emerald-600 p-6 rounded-2xl shadow-xl relative box-shadow-inset">
+                        <h3 class="text-2xl font-bold text-emerald-400 mb-3 flex items-center">
+                            <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-2-8v-2h4v2h2v4h-2v2h-4v-2h-2v-4z"/></svg>
+                            DALL-E 3
+                        </h3>
+                        <div class="relative bg-gray-900 p-4 rounded-xl border-2 border-emerald-500 box-shadow-inset">
+                            <pre id="dallePrompt_es" class="text-gray-200 whitespace-pre-wrap font-mono text-sm"></pre>
+                            <button onclick="copyToClipboard('dallePrompt_es', this)" class="copy-btn">
+                                <svg class="w-5 h-5 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="prompt-box bg-[#0A192F] border-4 border-purple-600 p-6 rounded-2xl shadow-xl relative box-shadow-inset">
+                        <h3 class="text-2xl font-bold text-purple-400 mb-3 flex items-center">
+                            <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h2v-6h-2v6zm0-8h2V7h-2v2z"/></svg>
+                            Stable Diffusion
+                        </h3>
+                        <div class="bg-gray-900 p-4 rounded-xl border-2 border-purple-500 mb-4 relative box-shadow-inset">
+                            <span class="font-bold text-gray-200 block mb-2">Prompt Positivo:</span>
+                            <pre id="sdPositivePrompt_es" class="text-gray-200 whitespace-pre-wrap font-mono text-sm"></pre>
+                            <button onclick="copyToClipboard('sdPositivePrompt_es', this)" class="copy-btn">
+                                <svg class="w-5 h-5 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="bg-gray-900 p-4 rounded-xl border-2 border-purple-500 relative box-shadow-inset">
+                            <span class="font-bold text-gray-200 block mb-2">Prompt Negativo:</span>
+                            <pre id="sdNegativePrompt_es" class="text-gray-200 whitespace-pre-wrap font-mono text-sm"></pre>
+                            <button onclick="copyToClipboard('sdNegativePrompt_es', this)" class="copy-btn">
+                                <svg class="w-5 h-5 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="prompt-box bg-[#0A192F] border-4 border-cyan-600 p-6 rounded-2xl shadow-xl relative box-shadow-inset">
+                        <h3 class="text-2xl font-bold text-cyan-400 mb-3 flex items-center">
+                            <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-2-8v-2h4v2h2v4h-2v2h-4v-2h-2v-4z"/></svg>
+                            Gemini Image (Nano Banana)
+                        </h3>
+                        <div class="relative bg-gray-900 p-4 rounded-xl border-2 border-cyan-500 box-shadow-inset">
+                            <pre id="geminiPrompt_es" class="text-gray-200 whitespace-pre-wrap font-mono text-sm"></pre>
+                            <button onclick="copyToClipboard('geminiPrompt_es', this)" class="copy-btn">
+                                <svg class="w-5 h-5 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Prompts Generados - Inglés -->
+                <div class="space-y-8">
+                    <h2 class="text-2xl font-bold text-gray-300 mb-4 text-center">Prompts en Inglés (Versión Optimizada)</h2>
+                    <div class="prompt-box bg-[#0A192F] border-4 border-yellow-600 p-6 rounded-2xl shadow-xl relative box-shadow-inset">
+                        <h3 class="text-2xl font-bold text-yellow-400 mb-3 flex items-center">
+                            <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h2v-6h-2v6zm0-8h2V7h-2v2z"/></svg>
+                            Midjourney
+                        </h3>
+                        <div class="relative bg-gray-900 p-4 rounded-xl border-2 border-yellow-500 box-shadow-inset">
+                            <pre id="mjPrompt_en" class="text-gray-200 whitespace-pre-wrap font-mono text-sm"></pre>
+                            <button onclick="copyToClipboard('mjPrompt_en', this)" class="copy-btn">
+                                <svg class="w-5 h-5 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="prompt-box bg-[#0A192F] border-4 border-emerald-600 p-6 rounded-2xl shadow-xl relative box-shadow-inset">
+                        <h3 class="text-2xl font-bold text-emerald-400 mb-3 flex items-center">
+                            <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-2-8v-2h4v2h2v4h-2v2h-4v-2h-2v-4z"/></svg>
+                            DALL-E 3
+                        </h3>
+                        <div class="relative bg-gray-900 p-4 rounded-xl border-2 border-emerald-500 box-shadow-inset">
+                            <pre id="dallePrompt_en" class="text-gray-200 whitespace-pre-wrap font-mono text-sm"></pre>
+                            <button onclick="copyToClipboard('dallePrompt_en', this)" class="copy-btn">
+                                <svg class="w-5 h-5 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="prompt-box bg-[#0A192F] border-4 border-purple-600 p-6 rounded-2xl shadow-xl relative box-shadow-inset">
+                        <h3 class="text-2xl font-bold text-purple-400 mb-3 flex items-center">
+                            <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h2v-6h-2v6zm0-8h2V7h-2v2z"/></svg>
+                            Stable Diffusion
+                        </h3>
+                        <div class="bg-gray-900 p-4 rounded-xl border-2 border-purple-500 mb-4 relative box-shadow-inset">
+                            <span class="font-bold text-gray-200 block mb-2">Prompt Positivo:</span>
+                            <pre id="sdPositivePrompt_en" class="text-gray-200 whitespace-pre-wrap font-mono text-sm"></pre>
+                            <button onclick="copyToClipboard('sdPositivePrompt_en', this)" class="copy-btn">
+                                <svg class="w-5 h-5 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="bg-gray-900 p-4 rounded-xl border-2 border-purple-500 relative box-shadow-inset">
+                            <span class="font-bold text-gray-200 block mb-2">Prompt Negativo:</span>
+                            <pre id="sdNegativePrompt_en" class="text-gray-200 whitespace-pre-wrap font-mono text-sm"></pre>
+                            <button onclick="copyToClipboard('sdNegativePrompt_en', this)" class="copy-btn">
+                                <svg class="w-5 h-5 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="prompt-box bg-[#0A192F] border-4 border-cyan-600 p-6 rounded-2xl shadow-xl relative box-shadow-inset">
+                        <h3 class="text-2xl font-bold text-cyan-400 mb-3 flex items-center">
+                            <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-2-8v-2h4v2h2v4h-2v2h-4v-2h-2v-4z"/></svg>
+                            Gemini Image (Nano Banana)
+                        </h3>
+                        <div class="relative bg-gray-900 p-4 rounded-xl border-2 border-cyan-500 box-shadow-inset">
+                            <pre id="geminiPrompt_en" class="text-gray-200 whitespace-pre-wrap font-mono text-sm"></pre>
+                            <button onclick="copyToClipboard('geminiPrompt_en', this)" class="copy-btn">
+                                <svg class="w-5 h-5 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección de JSON -->
+                <div class="space-y-4">
+                    <h3 class="text-xl md:text-2xl font-bold text-white tracking-tight text-center">Salidas JSON</h3>
+                    <p class="text-gray-400 text-sm text-center">Cada bloque contiene el JSON específico y optimizado para cada modelo. Haz clic para expandir.</p>
+                    <details class="bg-[#0A192F] rounded-2xl shadow-lg border border-gray-700 box-shadow-inset">
+                        <summary class="p-4 md:p-6 cursor-pointer text-lg font-bold text-white flex justify-between items-center hover:bg-gray-900 transition-colors">
+                            Midjourney JSON
+                            <svg class="w-5 h-5 transition-transform duration-300 transform" fill="currentColor" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5H7z"/></svg>
+                        </summary>
+                        <div class="p-4 md:p-6 pt-0 space-y-4">
+                            <div class="bg-gray-900 p-4 rounded-xl border-2 border-yellow-500 box-shadow-inset">
+                                <span class="font-bold text-gray-200 block mb-2">Español</span>
+                                <pre id="jsonOutput_mj_es" class="text-gray-200 whitespace-pre-wrap font-mono text-sm"></pre>
+                            </div>
+                            <div class="bg-gray-900 p-4 rounded-xl border-2 border-yellow-500 box-shadow-inset">
+                                <span class="font-bold text-gray-200 block mb-2">Inglés</span>
+                                <pre id="jsonOutput_mj_en" class="text-gray-200 whitespace-pre-wrap font-mono text-sm"></pre>
+                            </div>
+                        </div>
+                    </details>
+                    <details class="bg-[#0A192F] rounded-2xl shadow-lg border border-gray-700 box-shadow-inset">
+                        <summary class="p-4 md:p-6 cursor-pointer text-lg font-bold text-white flex justify-between items-center hover:bg-gray-900 transition-colors">
+                            DALL-E 3 JSON
+                            <svg class="w-5 h-5 transition-transform duration-300 transform" fill="currentColor" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5H7z"/></svg>
+                        </summary>
+                        <div class="p-4 md:p-6 pt-0 space-y-4">
+                            <div class="bg-gray-900 p-4 rounded-xl border-2 border-emerald-500 box-shadow-inset">
+                                <span class="font-bold text-gray-200 block mb-2">Español</span>
+                                <pre id="jsonOutput_dalle_es" class="text-gray-200 whitespace-pre-wrap font-mono text-sm"></pre>
+                            </div>
+                            <div class="bg-gray-900 p-4 rounded-xl border-2 border-emerald-500 box-shadow-inset">
+                                <span class="font-bold text-gray-200 block mb-2">Inglés</span>
+                                <pre id="jsonOutput_dalle_en" class="text-gray-200 whitespace-pre-wrap font-mono text-sm"></pre>
+                            </div>
+                        </div>
+                    </details>
+                    <details class="bg-[#0A192F] rounded-2xl shadow-lg border border-gray-700 box-shadow-inset">
+                        <summary class="p-4 md:p-6 cursor-pointer text-lg font-bold text-white flex justify-between items-center hover:bg-gray-900 transition-colors">
+                            Stable Diffusion JSON
+                            <svg class="w-5 h-5 transition-transform duration-300 transform" fill="currentColor" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5H7z"/></svg>
+                        </summary>
+                        <div class="p-4 md:p-6 pt-0 space-y-4">
+                            <div class="bg-gray-900 p-4 rounded-xl border-2 border-purple-500 box-shadow-inset">
+                                <span class="font-bold text-gray-200 block mb-2">Español</span>
+                                <pre id="jsonOutput_sd_es" class="text-gray-200 whitespace-pre-wrap font-mono text-sm"></pre>
+                            </div>
+                            <div class="bg-gray-900 p-4 rounded-xl border-2 border-purple-500 box-shadow-inset">
+                                <span class="font-bold text-gray-200 block mb-2">Inglés</span>
+                                <pre id="jsonOutput_sd_en" class="text-gray-200 whitespace-pre-wrap font-mono text-sm"></pre>
+                            </div>
+                        </div>
+                    </details>
+                    <details class="bg-[#0A192F] rounded-2xl shadow-lg border border-gray-700 box-shadow-inset">
+                        <summary class="p-4 md:p-6 cursor-pointer text-lg font-bold text-white flex justify-between items-center hover:bg-gray-900 transition-colors">
+                            Gemini Image JSON
+                            <svg class="w-5 h-5 transition-transform duration-300 transform" fill="currentColor" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5H7z"/></svg>
+                        </summary>
+                        <div class="p-4 md:p-6 pt-0 space-y-4">
+                            <div class="bg-gray-900 p-4 rounded-xl border-2 border-cyan-500 box-shadow-inset">
+                                <span class="font-bold text-gray-200 block mb-2">Español</span>
+                                <pre id="jsonOutput_gemini_es" class="text-gray-200 whitespace-pre-wrap font-mono text-sm"></pre>
+                            </div>
+                            <div class="bg-gray-900 p-4 rounded-xl border-2 border-cyan-500 box-shadow-inset">
+                                <span class="font-bold text-gray-200 block mb-2">Inglés</span>
+                                <pre id="jsonOutput_gemini_en" class="text-gray-200 whitespace-pre-wrap font-mono text-sm"></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="mt-12 text-center text-gray-400 text-sm">
+        <div class="bg-gray-900 rounded-lg p-4 border border-gray-700 max-w-lg mx-auto">
+            <p>Diseño, elaboración e idea por:</p>
+            <p class="font-bold text-lg text-yellow-400">@ONLYMADOC & Gemini, un Asistente de Google</p>
+        </div>
+    </footer>
+
+    <script>
+        const API_KEY = "AIzaSyCJSjaQM30ZjLWZjcEgW9StEahZbySiCs4";
+        const inputs = ['subject', 'action', 'environment', 'style', 'lighting', 'composition'];
+        const generateBtn = document.getElementById('generateBtn');
+        const resultsSection = document.getElementById('results');
+        const negativePromptTags = document.querySelectorAll('[data-value]');
+        const negativeValues = new Set();
+        const toggleModeBtn = document.getElementById('toggleModeBtn');
+        const learnerModeDiv = document.getElementById('learnerMode');
+        const expertModeDiv = document.getElementById('expertMode');
+        const expertPromptTextarea = document.getElementById('expertPrompt');
+        const anatomyDescription = document.getElementById('anatomyDescription');
+        
+        let isExpertMode = false;
+
+        function copyToClipboard(elementId, button) {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+            
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = element.innerText;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            const originalIcon = button.innerHTML;
+            button.innerHTML = '<svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>';
+            setTimeout(() => {
+                button.innerHTML = originalIcon;
+            }, 2000);
+        }
+        
+        negativePromptTags.forEach(tag => {
+            tag.addEventListener('click', () => {
+                const value = tag.dataset.value;
+                if (negativeValues.has(value)) {
+                    negativeValues.delete(value);
+                    tag.classList.remove('bg-red-500', 'text-white');
+                    tag.classList.add('bg-gray-700', 'text-gray-300');
+                } else {
+                    negativeValues.add(value);
+                    tag.classList.remove('bg-gray-700', 'text-gray-300');
+                    tag.classList.add('bg-red-500', 'text-white');
+                }
+            });
+        });
+
+        toggleModeBtn.addEventListener('click', () => {
+            isExpertMode = !isExpertMode;
+            if (isExpertMode) {
+                learnerModeDiv.classList.add('hidden');
+                expertModeDiv.classList.remove('hidden');
+                toggleModeBtn.textContent = 'Cambiar a Modo Aprendiz';
+            } else {
+                learnerModeDiv.classList.remove('hidden');
+                expertModeDiv.classList.add('hidden');
+                toggleModeBtn.textContent = 'Cambiar a Modo Experto';
+            }
+        });
+
+        generateBtn.addEventListener('click', async () => {
+            let userPrompt = '';
+            let negativePrompt = '';
+            let userInputs = [];
+
+            if (isExpertMode) {
+                userPrompt = expertPromptTextarea.value.trim();
+                if (!userPrompt) {
+                    console.log("Por favor, ingresa un prompt en el modo experto.");
+                    return;
+                }
+            } else {
+                const promptParts = inputs.map(id => document.getElementById(id).value.trim()).filter(Boolean);
+                const customNegative = document.getElementById('customNegative').value.split(',').map(s => s.trim()).filter(Boolean);
+                negativePrompt = [...negativeValues, ...customNegative].join(', ');
+                userInputs = promptParts;
+                
+                if (promptParts.length === 0) {
+                    console.log("Por favor, llena al menos un campo para generar un prompt.");
+                    return;
+                }
+
+                userPrompt = `
+                    Sujeto: ${promptParts[0] || 'Un guerrero'}
+                    Acción: ${promptParts[1] || 'empuñando una espada'}
+                    Entorno: ${promptParts[2] || 'en un bosque oscuro'}
+                    Estilo: ${promptParts[3] || 'cinematográfico'}
+                    Iluminación: ${promptParts[4] || 'luz dramática'}
+                    Composición: ${promptParts[5] || 'plano medio'}
+                    Prompt negativo: ${negativePrompt || 'ninguno'}
+                `.trim();
+            }
+
+            generateBtn.disabled = true;
+            generateBtn.textContent = 'Lo bueno demora un poco...';
+
+            await generatePrompts(userPrompt, userInputs, negativePrompt, isExpertMode);
+
+            generateBtn.disabled = false;
+            generateBtn.textContent = 'Generar Prompts';
+            resultsSection.classList.remove('hidden');
+        });
+
+        async function generatePrompts(prompt, userInputs, negativePrompt, isExpertMode) {
+            try {
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${API_KEY}`;
+                
+                const systemPrompt = `Eres un ingeniero de prompts de IA de clase mundial, especializado en artes visuales. Tu tarea es tomar un prompt de un usuario y expandirlo en prompts de alta calidad, listos para ser utilizados en Midjourney, DALL-E 3, Stable Diffusion y Gemini Image. Para cada modelo, también crea un prompt en inglés. La salida debe ser un objeto JSON.
+
+                - Para **Midjourney**, crea un prompt cinematográfico y descriptivo. Usa lenguaje afirmativo y parámetros técnicos como --ar 16:9 y --s 750.
+                - Para **DALL-E 3**, crea un prompt muy descriptivo y narrativo. Evita el lenguaje negativo.
+                - Para **Stable Diffusion**, crea un prompt positivo y uno negativo. El prompt positivo debe ser detallado, mientras que el negativo debe incluir términos a evitar.
+                - Para **Gemini Image**, el prompt debe ser directo y conciso, optimizado para su comprensión.
+                - Tu respuesta debe ser un objeto JSON con las siguientes propiedades: "midjourney_es", "dalle_es", "stable_diffusion_es_positivo", "stable_diffusion_es_negativo", "gemini_image_es", "midjourney_en", "dalle_en", "stable_diffusion_en_positive", "stable_diffusion_en_negative", "gemini_image_en".`;
+
+                const payload = {
+                    contents: [{ parts: [{ text: prompt }] }],
+                    systemInstruction: { parts: [{ text: systemPrompt }] },
+                    generationConfig: { responseMimeType: "application/json" }
+                };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                const jsonString = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (!jsonString) {
+                    console.error("Error en la respuesta de la API: no se encontraron candidatos o contenido.");
+                    return;
+                }
+                const parsedJson = JSON.parse(jsonString);
+
+                const anatomyContainer = document.getElementById('anatomyContainer');
+                anatomyContainer.innerHTML = '';
+                if (isExpertMode) {
+                    anatomyDescription.innerText = "Este es el prompt que has proporcionado. Ha sido optimizado para cada modelo.";
+                    const div = document.createElement('div');
+                    div.className = 'p-3 rounded-lg bg-gray-900 text-gray-300';
+                    div.innerHTML = `<span class="font-bold text-white">Prompt Completo:</span> ${prompt}`;
+                    anatomyContainer.appendChild(div);
+                } else {
+                    anatomyDescription.innerText = "Así es como tu visión se tradujo en un prompt de alta precisión.";
+                    const parts = ["Sujeto", "Acción", "Entorno", "Estilo", "Iluminación", "Composición"];
+                    userInputs.forEach((input, index) => {
+                        const div = document.createElement('div');
+                        div.className = 'p-3 rounded-lg bg-gray-900 text-gray-300';
+                        div.innerHTML = `<span class="font-bold text-white">${parts[index]}:</span> ${input}`;
+                        anatomyContainer.appendChild(div);
+                    });
+                    if (negativePrompt) {
+                        const div = document.createElement('div');
+                        div.className = 'p-3 rounded-lg bg-red-900 text-gray-300';
+                        div.innerHTML = `<span class="font-bold text-white">Prompts Negativos:</span> ${negativePrompt}`;
+                        anatomyContainer.appendChild(div);
+                    }
+                }
+
+                document.getElementById('mjPrompt_es').innerText = parsedJson.midjourney_es;
+                document.getElementById('mjPrompt_en').innerText = parsedJson.midjourney_en;
+                document.getElementById('dallePrompt_es').innerText = parsedJson.dalle_es;
+                document.getElementById('dallePrompt_en').innerText = parsedJson.dalle_en;
+                document.getElementById('sdPositivePrompt_es').innerText = parsedJson.stable_diffusion_es_positivo;
+                document.getElementById('sdPositivePrompt_en').innerText = parsedJson.stable_diffusion_en_positive;
+                document.getElementById('sdNegativePrompt_es').innerText = parsedJson.stable_diffusion_es_negativo;
+                document.getElementById('sdNegativePrompt_en').innerText = parsedJson.stable_diffusion_en_negative;
+                document.getElementById('geminiPrompt_es').innerText = parsedJson.gemini_image_es;
+                document.getElementById('geminiPrompt_en').innerText = parsedJson.gemini_image_en;
+
+                document.getElementById('jsonOutput_mj_es').innerText = JSON.stringify({
+                    midjourney_es: parsedJson.midjourney_es
+                }, null, 2);
+                document.getElementById('jsonOutput_mj_en').innerText = JSON.stringify({
+                    midjourney_en: parsedJson.midjourney_en
+                }, null, 2);
+
+                document.getElementById('jsonOutput_dalle_es').innerText = JSON.stringify({
+                    dalle_es: parsedJson.dalle_es
+                }, null, 2);
+                document.getElementById('jsonOutput_dalle_en').innerText = JSON.stringify({
+                    dalle_en: parsedJson.dalle_en
+                }, null, 2);
+
+                document.getElementById('jsonOutput_sd_es').innerText = JSON.stringify({
+                    stable_diffusion_es_positivo: parsedJson.stable_diffusion_es_positivo,
+                    stable_diffusion_es_negativo: parsedJson.stable_diffusion_es_negativo
+                }, null, 2);
+                document.getElementById('jsonOutput_sd_en').innerText = JSON.stringify({
+                    stable_diffusion_en_positive: parsedJson.stable_diffusion_en_positive,
+                    stable_diffusion_en_negative: parsedJson.stable_diffusion_en_negative
+                }, null, 2);
+
+                document.getElementById('jsonOutput_gemini_es').innerText = JSON.stringify({
+                    gemini_image_es: parsedJson.gemini_image_es
+                }, null, 2);
+                document.getElementById('jsonOutput_gemini_en').innerText = JSON.stringify({
+                    gemini_image_en: parsedJson.gemini_en
+                }, null, 2);
+            } catch (error) {
+                console.error("Error al generar los prompts:", error);
+            }
+        }
+    </script>
+</body>
+</html>
