@@ -379,7 +379,11 @@
     </footer>
 
     <script>
-        const API_KEY = "AIzaSyCJSjaQM30ZjLWZjcEgW9StEahZbySiCs4";
+        // ¡IMPORTANTE! Pega tu clave de API aquí, dentro de las comillas simples.
+        // Esto permite que el código funcione tanto en el entorno de Google como en GitHub.
+        // NO compartas este código con la clave pegada en repositorios públicos.
+        const apiKey = typeof __api_key !== 'undefined' ? __api_key : 'AIzaSyCJSjaQM30ZjLWZjcEgW9StEahZbySiCs4';
+
         const inputs = ['subject', 'action', 'environment', 'style', 'lighting', 'composition'];
         const generateBtn = document.getElementById('generateBtn');
         const resultsSection = document.getElementById('results');
@@ -484,7 +488,7 @@
 
         async function generatePrompts(prompt, userInputs, negativePrompt, isExpertMode) {
             try {
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${API_KEY}`;
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
                 
                 const systemPrompt = `Eres un ingeniero de prompts de IA de clase mundial, especializado en artes visuales. Tu tarea es tomar un prompt de un usuario y expandirlo en prompts de alta calidad, listos para ser utilizados en Midjourney, DALL-E 3, Stable Diffusion y Gemini Image. Para cada modelo, también crea un prompt en inglés. La salida debe ser un objeto JSON.
 
